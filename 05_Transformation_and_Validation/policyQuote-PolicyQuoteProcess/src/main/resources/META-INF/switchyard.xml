@@ -1,0 +1,70 @@
+<switchyard xmlns="urn:switchyard-config:switchyard:1.0"
+		targetNamespace="http://www.savara.org/policyQuote/PolicyQuoteProcess"
+		name="PolicyQuoteProcess">
+	<composite xmlns="http://docs.oasis-open.org/ns/opencsa/sca/200912"
+			targetNamespace="http://www.savara.org/policyQuote/PolicyQuoteProcess"
+			name="PolicyQuoteProcess" >
+		<service name="PolicyQuoteProcess" promote="PolicyQuoteProcessComponent/PolicyQuoteProcess">
+			<interface.wsdl interface="wsdl/policyQuote_PolicyQuoteProcess.wsdl#wsdl.porttype(PolicyQuoteProcess)" />
+			<binding.soap xmlns="urn:switchyard-component-soap:config:1.0">
+				<wsdl>wsdl/policyQuote_PolicyQuoteProcess.wsdl</wsdl>
+				<socketAddr>:18001</socketAddr>
+			</binding.soap>
+		</service>
+		<reference name="DrivingRecordService" promote="PolicyQuoteProcessComponent/DrivingRecordService" multiplicity="1..1" >
+			<interface.wsdl interface="wsdl/policyQuote_DrivingRecordService.wsdl#wsdl.porttype(DrivingRecordService)" />
+			<binding.soap xmlns="urn:switchyard-component-soap:config:1.0">
+				<wsdl>wsdl/policyQuote_DrivingRecordService.wsdl</wsdl>
+				<socketAddr>:18001</socketAddr>
+			</binding.soap>
+		</reference>
+		<reference name="CreditCheckService" promote="PolicyQuoteProcessComponent/CreditCheckService" multiplicity="1..1" >
+			<interface.wsdl interface="wsdl/policyQuote_CreditCheckService.wsdl#wsdl.porttype(CreditCheckService)" />
+			<binding.soap xmlns="urn:switchyard-component-soap:config:1.0">
+				<wsdl>wsdl/policyQuote_CreditCheckService.wsdl</wsdl>
+				<socketAddr>:18001</socketAddr>
+			</binding.soap>
+		</reference>
+		<component name="PolicyQuoteProcessComponent">
+			<implementation.bean xmlns="urn:switchyard-component-bean:config:1.0" class="org.savara.policyquote.policyquoteprocess.PolicyQuoteProcessImpl"/>
+			<service name="PolicyQuoteProcess" >
+				<interface.java interface="org.savara.policyquote.policyquoteprocess.PolicyQuoteProcess"/>
+			</service>
+			<reference name="DrivingRecordService" >
+				<interface.java interface="org.savara.policyquote.drivingrecordservice.DrivingRecordService"/>
+			</reference>
+			<reference name="CreditCheckService" >
+				<interface.java interface="org.savara.policyquote.creditcheckservice.CreditCheckService"/>
+			</reference>
+		</component>
+	</composite>
+	<transforms xmlns:xform="urn:switchyard-config:transform:1.0">
+		<xform:transform.jaxb
+			from="{http://www.example.org/policyQuote}policyQuote"
+			to="java:org.example.policyquote.PolicyQuote"
+			contextPath="org.example.policyquote"/>
+		<xform:transform.jaxb
+			to="{http://www.example.org/policyQuote}policyQuoteReply"
+			from="java:org.example.policyquote.PolicyQuoteReply"
+			contextPath="org.example.policyquote"/>
+		<xform:transform.java class="org.savara.policyquote.policyquoteprocess.TooManyAccidentsFaultProviderTransformer"
+			to="{http://www.example.org/policyQuote}policyQuoteFault"
+			from="java:org.savara.policyquote.policyquoteprocess.TooManyAccidentsFault"/>
+		<xform:transform.jaxb
+			to="{http://dmv.com/drivingRecord}drivingRecordRequest"
+			from="java:com.dmv.drivingrecord.DrivingRecordRequest"
+			contextPath="com.dmv.drivingrecord"/>
+		<xform:transform.jaxb
+			from="{http://dmv.com/drivingRecord}drivingRecordResponse"
+			to="java:com.dmv.drivingrecord.DrivingRecordResponse"
+			contextPath="com.dmv.drivingrecord"/>
+		<xform:transform.jaxb
+			to="{http://creditagency.com/creditCheck}creditCheckRequest"
+			from="java:com.creditagency.creditcheck.CreditCheckRequest"
+			contextPath="com.creditagency.creditcheck"/>
+		<xform:transform.jaxb
+			from="{http://creditagency.com/creditCheck}creditCheckResponse"
+			to="java:com.creditagency.creditcheck.CreditCheckResponse"
+			contextPath="com.creditagency.creditcheck"/>
+	</transforms>
+</switchyard>

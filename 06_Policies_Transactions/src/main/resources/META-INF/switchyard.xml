@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<switchyard xmlns="urn:switchyard-config:switchyard:1.0" xmlns:bean="urn:switchyard-component-bean:config:1.0" xmlns:jca="urn:switchyard-component-jca:config:1.0" xmlns:jms="urn:switchyard-component-camel-jms:config:1.0" xmlns:jpa="urn:switchyard-component-camel-jpa:config:1.0" xmlns:quartz="urn:switchyard-component-camel-quartz:config:1.0" xmlns:sca="http://docs.oasis-open.org/ns/opencsa/sca/200912" xmlns:soap="urn:switchyard-component-soap:config:1.0" xmlns:transform="urn:switchyard-config:transform:1.0">
+  <sca:composite name="PolicyQuoteEntityService" targetNamespace="urn:switchyard-quickstart:camel-jpa-binding:0.1.0">
+    <sca:component name="PolicyQuoteEntity">
+      <bean:implementation.bean class="org.acme.insurance.policyquote.PolicyQuoteEntityServiceImpl"/>
+      <sca:service name="PolicyQuoteEntityService">
+        <sca:interface.java interface="org.acme.insurance.policyquote.PolicyQuoteEntityService"/>
+      </sca:service>
+      <sca:reference name="StoreReference">
+        <sca:interface.java interface="org.acme.insurance.policyquote.StoreService"/>
+      </sca:reference>
+    </sca:component>
+    <sca:service name="PolicyQuoteEntityService" promote="PolicyQuoteEntity/PolicyQuoteEntityService">
+      <sca:interface.wsdl interface="PolicyQuoteEntityWSService.wsdl#wsdl.porttype(PolicyQuoteEntityWS)"/>
+      <soap:binding.soap name="soap1">
+        <soap:wsdl>PolicyQuoteEntityWSService.wsdl</soap:wsdl>
+        <soap:wsdlPort>PolicyQuoteEntityWSPort</soap:wsdlPort>
+        <soap:contextPath>policyquote</soap:contextPath>
+      </soap:binding.soap>
+    </sca:service>
+    <sca:reference name="StoreReference" multiplicity="0..1" promote="PolicyQuoteEntity/StoreReference">
+      <sca:interface.java interface="org.acme.insurance.policyquote.StoreService"/>
+      <jpa:binding.jpa>
+        <jpa:entityClassName>org.acme.insurance.policyquote.domain.PolicyQuote</jpa:entityClassName>
+        <jpa:persistenceUnit>PolicyQuote</jpa:persistenceUnit>
+        <jpa:transactionManager>#jtaTransactionManager</jpa:transactionManager>
+        <jpa:produce/>
+      </jpa:binding.jpa>
+    </sca:reference>
+  </sca:composite>
+  <transforms>
+    <transform:transform.smooks from="{http://insurance.acme.org/}createPolicyQuote" to="java:org.acme.insurance.policyquote.domain.PolicyQuote" type="XML2JAVA" config="PolicyQuoteConfigSmooks.xml"/>
+    <transform:transform.smooks from="{http://insurance.acme.org/}deletePolicyQuote" to="java:org.acme.insurance.policyquote.domain.PolicyQuote" type="XML2JAVA" config="PolicyQuoteConfigSmooks.xml"/>
+    <transform:transform.smooks from="{http://insurance.acme.org/}getPolicyQuote" to="java:org.acme.insurance.policyquote.domain.PolicyQuote" type="XML2JAVA" config="PolicyQuoteConfigSmooks.xml"/>
+  </transforms>
+  <domain>
+    <properties>
+      <property name="org.switchyard.handlers.messageTrace.enabled" value="false"/>
+    </properties>
+    <securities/>
+  </domain>
+</switchyard>

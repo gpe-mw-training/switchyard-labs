@@ -1,0 +1,21 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ins="http://insurance.acme.org/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ins:createPolicyQuote>
+         <policyQuote>
+            <age>12</age>
+            <creditScore>22</creditScore>
+            <dlNumber>12345</dlNumber>
+            <driverName>David</driverName>
+            <numberOfAccidents>2</numberOfAccidents>
+            <numberOfTickets>2</numberOfTickets>
+            <policyQuoteID></policyQuoteID>
+            <policyType>AUTO</policyType>
+            <price>1000</price>
+            <requestDate></requestDate>
+            <ssn>12345</ssn>
+            <vehicleYear>2009</vehicleYear>
+         </policyQuote>
+      </ins:createPolicyQuote>
+   </soapenv:Body>
+</soapenv:Envelope>
