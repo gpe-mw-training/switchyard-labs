@@ -13,7 +13,9 @@ import javax.xml.ws.WebFault;
 @WebFault(name = "policyQuoteFault", targetNamespace = "http://www.example.org/policyQuote")
 public class TooManyAccidentsFault extends Exception {
     
-    private org.example.policyquote.PolicyQuoteFault policyQuoteFault;
+	private static final long serialVersionUID = 1L;
+	
+	private org.example.policyquote.PolicyQuoteFault policyQuoteFault;
 
     public TooManyAccidentsFault() {
         super();
